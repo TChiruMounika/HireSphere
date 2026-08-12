@@ -1,34 +1,30 @@
+import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
-import * as dotenv from 'dotenv';
-import { db } from './db';
-import { users } from './schema';
-
-dotenv.config();
+import { neon } from '@neondatabase/serverless';
+import { drizzle } from 'drizzle-orm/neon-http';
+import * as schema from './schema';
+import { registerUser, loginUser } from './modules/users/user.controller';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Middleware
+// Global Middleware
 app.use(cors());
 app.use(express.json());
 
-// Health Check & Database Test Route
-app.get('/api/health', async (req, res) => {
-  try {
-    const allUsers = await db.select().from(users);
-    res.json({ 
-      status: 'success', 
-      message: 'Server is running and connected to Neon PostgreSQL!', 
-      users: allUsers 
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ status: 'error', message: 'Database query failed', error });
-  }
-});
+// Database Initialization
+if (!process.env.DATABASE_URL) {
+  throw new Error('DATABASE_URL is missing in environment variables');
+}
 
-// Start the server
+const sql = neon(process.env.DATABASE_URL);
+export const db = drizzle(sql, { schema });
+
+// API Routes
+app.post('/api/auth/register', registerUser);
+app.post('/api/auth/login', loginUser);
+
 app.listen(PORT, () => {
   console.log(`🚀 HireSphere server is live on http://localhost:${PORT}`);
 });
