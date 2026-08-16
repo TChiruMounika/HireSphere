@@ -1,4 +1,13 @@
 {
+  "name": "hiresphere",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "concurrently -c \"cyan,magenta\" \"npm run dev --workspace=server\" \"npm run dev --workspace=web\""
+  },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.3",
     "react-router-dom": "^7.18.2",
@@ -6,6 +15,7 @@
   },
   "devDependencies": {
     "@types/react": "^19.2.18",
-    "@types/react-dom": "^19.2.4"
+    "@types/react-dom": "^19.2.4",
+    "concurrently": "^10.0.5"
   }
 }
