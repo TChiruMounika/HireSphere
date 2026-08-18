@@ -3,6 +3,8 @@ import express from 'express';
 import cors from 'cors';
 import { db, users } from './db/schema'; // ✅ Removed .js
 import { registerUser, loginUser } from './modules/users/user.controller'; // ✅ Removed .js
+import { verifyToken } from './middleware/authGuard';
+import { eq } from 'drizzle-orm';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -14,6 +16,29 @@ app.use(express.json());
 // API Routes
 app.post('/api/auth/register', registerUser);
 app.post('/api/auth/login', loginUser);
+app.get('/api/auth/me', verifyToken, async (req: any, res) => {
+  try {
+    const userResult = await db
+      .select({
+        id: users.id,
+        email: users.email,
+        role: users.role,
+      })
+      .from(users)
+      .where(eq(users.id, req.user.id));
+
+    const user = userResult[0];
+
+    if (!user) {
+      res.status(404).json({ error: "User not found" });
+      return;
+    }
+
+    res.json({ user });
+  } catch (error: any) {
+    res.status(500).json({ error: "Failed to fetch user" });
+  }
+});
 
 // NOISY HEALTH ROUTE FOR DEBUGGING!
 app.get('/api/health', async (req, res) => {

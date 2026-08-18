@@ -1,22 +1,16 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
+import { useAuthStore } from "./store/authStore";
 
 export default function DashboardLayout() {
   const location = useLocation();
   const navigate = useNavigate();
+  const authUser = useAuthStore((state) => state.user);
   
   const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const [activeUser, setActiveUser] = useState<{email: string, role: string} | null>(null);
-
+  const activeUser = authUser;
   // 1. Ensure only signed-in accounts from the DB get access
-  useEffect(() => {
-    const storedUser = localStorage.getItem("hiresphere_active_user");
-    if (!storedUser) {
-      navigate("/login"); 
-    } else {
-      setActiveUser(JSON.parse(storedUser));
-    }
-  }, [navigate]);
+
 
   if (!activeUser) return null; 
 
@@ -38,11 +32,12 @@ export default function DashboardLayout() {
   };
 
   // 4. Handle Logout (Moved to profile dropdown)
-  const handleLogout = () => {
-    localStorage.removeItem("hiresphere_active_user");
-    localStorage.removeItem("hiresphere_token");
-    navigate("/login");
-  };
+const logout = useAuthStore((state) => state.logout);
+
+const handleLogout = () => {
+  logout();
+  navigate("/login");
+};
 
   const navigation = {
     student: [

@@ -6,8 +6,9 @@ import Login from "./Login";
 import Signup from "./Signup";
 import DashboardLayout from "./DashboardLayout";
 import StudentDashboard from "./StudentDashboard";
-import Home from "./Home"; 
-import ProfileSettings from "./ProfileSettings"; // <-- 1. Import it here
+import Home from "./Home";
+import ProfileSettings from "./ProfileSettings";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 export default function App() {
   return (
@@ -16,13 +17,15 @@ export default function App() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-        
-        <Route path="/dashboard" element={<DashboardLayout />}>
-           <Route index element={<StudentDashboard />} />
-           <Route path="scanner" element={<ResumeScanner />} />
-           <Route path="coordinator" element={<CoordinatorDashboard />} />
-           <Route path="dean" element={<DeanDashboard />} />
-           <Route path="profile" element={<ProfileSettings />} /> {/* <-- 2. Add route here */}
+
+        <Route element={<ProtectedRoute />}>
+          <Route path="/dashboard" element={<DashboardLayout />}>
+            <Route index element={<StudentDashboard />} />
+            <Route path="scanner" element={<ResumeScanner />} />
+            <Route path="coordinator" element={<CoordinatorDashboard />} />
+            <Route path="dean" element={<DeanDashboard />} />
+            <Route path="profile" element={<ProfileSettings />} />
+          </Route>
         </Route>
       </Routes>
     </BrowserRouter>
