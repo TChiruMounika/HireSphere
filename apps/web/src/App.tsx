@@ -10,6 +10,9 @@ import StudentDashboard from "./StudentDashboard";
 import Home from "./Home"; 
 import ProfileSettings from "./ProfileSettings";
 import PortalSelection from "./PortalSelection";
+import Home from "./Home";
+import ProfileSettings from "./ProfileSettings";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 export default function App() {
   
@@ -45,6 +48,15 @@ export default function App() {
            <Route path="coordinator" element={<CoordinatorDashboard />} />
            <Route path="admin" element={<DeanDashboard />} />
            <Route path="profile" element={<ProfileSettings />} /> 
+
+        <Route element={<ProtectedRoute />}>
+          <Route path="/dashboard" element={<DashboardLayout />}>
+            <Route index element={<StudentDashboard />} />
+            <Route path="scanner" element={<ResumeScanner />} />
+            <Route path="coordinator" element={<CoordinatorDashboard />} />
+            <Route path="dean" element={<DeanDashboard />} />
+            <Route path="profile" element={<ProfileSettings />} />
+          </Route>
         </Route>
       </Routes>
     </BrowserRouter>

@@ -1,65 +1,98 @@
-export default function ResumeScanner() {
-  return (
-    <div className="space-y-6">
-      
-      <div>
-        <h2 className="text-3xl font-bold text-white tracking-tight">ATS Resume Scanner</h2>
-        <p className="text-slate-400 mt-1">Upload your resume to see how it matches with top tech company filters.</p>
-      </div>
+import { useState } from "react";
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+export default function ResumeScanner() {
+  const [file, setFile] = useState<File | null>(null);
+  const [isScanning, setIsScanning] = useState(false);
+  const [score, setScore] = useState<number | null>(null);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setFile(e.target.files[0]);
+      setScore(null); // Reset score on new upload
+    }
+  };
+
+  const handleScan = () => {
+    if (!file) return;
+    setIsScanning(true);
+    
+    // Simulating backend processing time so we don't break the app
+    setTimeout(() => {
+      setIsScanning(false);
+      // Generate a random mock score between 75 and 98
+      setScore(Math.floor(Math.random() * (98 - 75 + 1)) + 75);
+    }, 2500);
+  };
+
+  return (
+    <div className="max-w-4xl mx-auto space-y-6">
+      
+      <div className="bg-slate-900 p-8 rounded-2xl shadow-xl border border-slate-800">
+        <h2 className="text-2xl font-extrabold text-purple-400 mb-2">ATS Resume Scanner</h2>
+        <p className="text-slate-400 text-sm mb-8">Upload your resume to see how well it matches industry standard filters.</p>
         
-        {/* Upload Section */}
-        <div className="lg:col-span-2 bg-slate-900/50 p-8 rounded-xl border-2 border-dashed border-slate-700 hover:border-blue-500 transition-colors flex flex-col items-center justify-center min-h-[350px]">
-          <div className="w-20 h-20 bg-slate-800 rounded-full flex items-center justify-center mb-4 shadow-lg">
-            <span className="text-4xl">📄</span>
-          </div>
-          <h3 className="text-xl font-semibold text-slate-200">Drag & Drop Resume (PDF)</h3>
-          <p className="text-slate-500 mt-2 text-center max-w-sm">
-            Ensure your file is under 5MB. We will instantly scan it against standard Applicant Tracking System parameters.
-          </p>
-          <button className="mt-6 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg transition-colors shadow-lg shadow-blue-500/20">
-            Browse Files
+        {/* Upload Box */}
+        <div className="border-2 border-dashed border-slate-700 rounded-xl p-10 text-center hover:border-purple-500 transition-colors bg-slate-950/50">
+          <input 
+            type="file" 
+            id="resume-upload" 
+            accept=".pdf,.doc,.docx"
+            className="hidden"
+            onChange={handleFileChange}
+          />
+          <label htmlFor="resume-upload" className="cursor-pointer flex flex-col items-center">
+            <span className="text-4xl mb-4">📄</span>
+            <span className="text-slate-300 font-medium hover:text-purple-400 transition-colors">
+              {file ? file.name : "Click to upload or drag and drop"}
+            </span>
+            <span className="text-slate-500 text-xs mt-2">PDF, DOC, DOCX (Max 5MB)</span>
+          </label>
+        </div>
+
+        {/* Action Button */}
+        <div className="mt-6 flex justify-end">
+          <button 
+            onClick={handleScan}
+            disabled={!file || isScanning}
+            className={`px-6 py-3 rounded-lg font-bold transition-all shadow-lg ${
+              !file || isScanning 
+                ? "bg-slate-800 text-slate-500 cursor-not-allowed" 
+                : "bg-purple-600 hover:bg-purple-700 text-white shadow-purple-500/20"
+            }`}
+          >
+            {isScanning ? "Scanning Document..." : "Run ATS Scan"}
           </button>
         </div>
-
-        {/* Mock Results Section */}
-        <div className="bg-slate-900 p-6 rounded-xl border border-slate-800 shadow-md">
-          <h3 className="text-lg font-semibold text-blue-300 mb-6">Last Scan Results</h3>
-          
-          <div className="flex items-center gap-5 mb-8">
-            {/* Fake Circular Progress */}
-            <div className="w-20 h-20 rounded-full border-4 border-slate-800 border-t-green-500 flex items-center justify-center rotate-45">
-              <span className="text-2xl font-extrabold text-green-400 -rotate-45">85%</span>
-            </div>
-            <div>
-              <p className="text-white font-bold text-lg">Strong Match</p>
-              <p className="text-slate-400 text-sm">Role: Frontend Engineer</p>
-            </div>
-          </div>
-
-          <div className="space-y-6">
-            <div>
-              <h4 className="text-slate-500 text-xs font-bold uppercase tracking-wider mb-3">Keywords Found</h4>
-              <div className="flex flex-wrap gap-2">
-                <span className="bg-green-500/10 text-green-400 border border-green-500/20 px-2 py-1 rounded text-xs font-medium">React.js</span>
-                <span className="bg-green-500/10 text-green-400 border border-green-500/20 px-2 py-1 rounded text-xs font-medium">TypeScript</span>
-                <span className="bg-green-500/10 text-green-400 border border-green-500/20 px-2 py-1 rounded text-xs font-medium">Tailwind CSS</span>
-                <span className="bg-green-500/10 text-green-400 border border-green-500/20 px-2 py-1 rounded text-xs font-medium">Git</span>
-              </div>
-            </div>
-            <div>
-              <h4 className="text-slate-500 text-xs font-bold uppercase tracking-wider mb-3">Missing Keywords (Suggested)</h4>
-              <div className="flex flex-wrap gap-2">
-                <span className="bg-red-500/10 text-red-400 border border-red-500/20 px-2 py-1 rounded text-xs font-medium">GraphQL</span>
-                <span className="bg-red-500/10 text-red-400 border border-red-500/20 px-2 py-1 rounded text-xs font-medium">Jest / Testing</span>
-                <span className="bg-red-500/10 text-red-400 border border-red-500/20 px-2 py-1 rounded text-xs font-medium">Redux</span>
-              </div>
-            </div>
-          </div>
-          
-        </div>
       </div>
+
+      {/* Results Section */}
+      {score !== null && !isScanning && (
+        <div className="bg-slate-900 p-8 rounded-2xl shadow-xl border border-slate-800 animate-in fade-in slide-in-from-bottom-4">
+          <h3 className="text-lg font-semibold text-slate-200 mb-4">Scan Results</h3>
+          <div className="flex items-center gap-8">
+            
+            {/* Score Circle */}
+            <div className={`w-32 h-32 rounded-full flex flex-col items-center justify-center border-4 ${score >= 85 ? 'border-green-500 text-green-400' : 'border-yellow-500 text-yellow-400'} bg-slate-950`}>
+              <span className="text-4xl font-extrabold">{score}</span>
+              <span className="text-xs uppercase tracking-wider font-semibold mt-1 text-slate-400">Score</span>
+            </div>
+
+            {/* Mock Feedback */}
+            <div className="flex-1 space-y-3">
+              <div className="bg-slate-950 p-4 rounded-lg border border-slate-800 text-sm text-slate-300">
+                <span className="text-green-400 mr-2">✓</span> Formatting is clean and easily readable by automated systems.
+              </div>
+              <div className="bg-slate-950 p-4 rounded-lg border border-slate-800 text-sm text-slate-300">
+                <span className="text-green-400 mr-2">✓</span> Strong use of action verbs in experience section.
+              </div>
+              <div className="bg-slate-950 p-4 rounded-lg border border-slate-800 text-sm text-slate-300">
+                <span className="text-yellow-400 mr-2">!</span> Consider adding more quantifiable metrics (numbers/percentages).
+              </div>
+            </div>
+
+          </div>
+        </div>
+      )}
     </div>
   );
 }
