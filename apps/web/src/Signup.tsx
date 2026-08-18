@@ -48,7 +48,8 @@ export default function Signup() {
       }
 
       alert("Account created successfully!");
-      navigate("/login");
+      // SECURITY FIX: replace: true so back button won't return to signup
+      navigate("/login", { replace: true });
 
     } catch (err: any) {
       setError(err.message);
@@ -56,42 +57,42 @@ export default function Signup() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-6 text-slate-100">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col items-center justify-center p-6 text-slate-900 dark:text-slate-100 transition-colors duration-300">
       
-      <div className="max-w-md w-full bg-slate-900 p-8 rounded-2xl shadow-xl border border-slate-800">
+      <div className="max-w-md w-full bg-white dark:bg-slate-900 p-8 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-800">
         
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-extrabold text-purple-400 tracking-tight mb-2">Join HireSphere</h1>
-          <p className="text-slate-400 text-sm">Create your account to get started</p>
+          <h1 className="text-3xl font-extrabold text-purple-600 dark:text-purple-400 tracking-tight mb-2">Join HireSphere</h1>
+          <p className="text-slate-500 dark:text-slate-400 text-sm">Create your account to get started</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           
           {error && (
-            <div className="bg-red-500/10 border border-red-500/50 text-red-400 p-3 rounded-lg text-sm text-center">
+            <div className="bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/50 text-red-600 dark:text-red-400 p-3 rounded-lg text-sm text-center">
               {error}
             </div>
           )}
 
           <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">Email Address</label>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Email Address</label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-colors"
+              className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-lg px-4 py-3 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-colors"
               placeholder="student@university.edu"
               required
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">Password</label>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Password</label>
             <input
               type={showPassword ? "text" : "password"}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-colors"
+              className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-lg px-4 py-3 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-colors"
               placeholder="••••••••"
               required
             />
@@ -103,20 +104,22 @@ export default function Signup() {
               id="showPassSignup" 
               checked={showPassword} 
               onChange={() => setShowPassword(!showPassword)} 
-              className="w-4 h-4 rounded border-slate-700 bg-slate-950 text-purple-600 focus:ring-purple-600 focus:ring-offset-slate-900 cursor-pointer" 
+              className="w-4 h-4 rounded border-slate-300 dark:border-slate-700 text-purple-600 focus:ring-purple-600 cursor-pointer" 
             />
-            <label htmlFor="showPassSignup" className="ml-2 text-sm text-slate-400 cursor-pointer">Show Password</label>
+            <label htmlFor="showPassSignup" className="ml-2 text-sm text-slate-600 dark:text-slate-400 cursor-pointer">Show Password</label>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">I am a...</label>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">I am a...</label>
             <select
               value={role}
               onChange={(e) => setRole(e.target.value)}
-              className="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-colors"
+              className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-lg px-4 py-3 text-slate-900 dark:text-white focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-colors cursor-pointer"
             >
               <option value="STUDENT">Student</option>
               <option value="COORDINATOR">Placement Coordinator</option>
+              {/* NEW ADMIN ROLE */}
+              <option value="ADMIN">Administrator / Dean</option>
             </select>
           </div>
 
@@ -125,8 +128,8 @@ export default function Signup() {
           </button>
         </form>
 
-        <p className="mt-6 text-center text-sm text-slate-400">
-          Already have an account? <span className="text-purple-400 hover:text-purple-300 cursor-pointer hover:underline" onClick={() => navigate("/login")}>Sign in here</span>
+        <p className="mt-6 text-center text-sm text-slate-500 dark:text-slate-400">
+          Already have an account? <span className="text-purple-600 dark:text-purple-400 hover:underline cursor-pointer" onClick={() => navigate("/login", { replace: true })}>Sign in here</span>
         </p>
 
       </div>

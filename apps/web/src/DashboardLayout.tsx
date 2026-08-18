@@ -13,25 +13,15 @@ export default function DashboardLayout() {
 
   const [activeUser, setActiveUser] = useState<{email: string, role: string} | null>(null);
 
-  // 1. Ensure only signed-in accounts get access
+  // 1. Ensure only signed-in accounts get access (AGGRESSIVE CHECK)
   useEffect(() => {
     const storedUser = localStorage.getItem("hiresphere_active_user");
     if (!storedUser) {
-      navigate("/login"); 
+      navigate("/login", { replace: true }); 
     } else {
       setActiveUser(JSON.parse(storedUser));
     }
-  }, [navigate]);
-
-  // 2. NEW: Check localStorage for theme preference on load
-  useEffect(() => {
-    const savedTheme = localStorage.getItem("hiresphere_theme") || "dark";
-    if (savedTheme === "dark") {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  }, []);
+  }, [navigate, location.pathname]); // <-- This forces an auth check on EVERY back/forward arrow click
 
   if (!activeUser) return null; 
 
@@ -39,7 +29,7 @@ export default function DashboardLayout() {
 
   const getPageTitle = () => {
     if (location.pathname.includes("coordinator")) return "Coordinator Overview";
-    if (location.pathname.includes("dean")) return "Admin Overview";
+    if (location.pathname.includes("admin")) return "Admin Overview";
     if (location.pathname.includes("scanner")) return "ATS Scanner Tools";
     if (location.pathname.includes("profile")) return "Profile Settings";
     return "Student Overview";
@@ -59,7 +49,7 @@ const handleLogout = () => {
   const handleLogout = () => {
     localStorage.removeItem("hiresphere_active_user");
     localStorage.removeItem("hiresphere_token");
-    navigate("/login");
+    navigate("/login", { replace: true });
   };
 
   const navigation = {
@@ -73,8 +63,8 @@ const handleLogout = () => {
       { name: "Student Database", path: "#", icon: "🗂️" },
       { name: "Active Drives", path: "#", icon: "🏢" },
     ],
-    dean: [
-      { name: "Admin Dashboard", path: "/dashboard/dean", icon: "⚙️" },
+    admin: [ 
+      { name: "Admin Dashboard", path: "/dashboard/admin", icon: "⚙️" },
       { name: "Master Schedule", path: "#", icon: "📅" },
       { name: "System Logs", path: "#", icon: "🖥️" },
     ]
@@ -124,7 +114,7 @@ const handleLogout = () => {
           
           <div className="flex items-center gap-6">
             
-            {/* Profile Dropdown Logic (Emoji Toggle Removed from here!) */}
+            {/* Profile Dropdown Logic */}
             <div className="relative">
               <button 
                 onClick={() => setIsProfileOpen(!isProfileOpen)}
