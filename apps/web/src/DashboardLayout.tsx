@@ -1,11 +1,16 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
+import { useAuthStore } from "./store/authStore";
 
 export default function DashboardLayout() {
   const location = useLocation();
   const navigate = useNavigate();
+  const authUser = useAuthStore((state) => state.user);
   
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const activeUser = authUser;
+  // 1. Ensure only signed-in accounts from the DB get access
+
   const [activeUser, setActiveUser] = useState<{email: string, role: string} | null>(null);
 
   // 1. Ensure only signed-in accounts get access
@@ -44,6 +49,13 @@ export default function DashboardLayout() {
     return email.substring(0, 2).toUpperCase();
   };
 
+  // 4. Handle Logout (Moved to profile dropdown)
+const logout = useAuthStore((state) => state.logout);
+
+const handleLogout = () => {
+  logout();
+  navigate("/login");
+};
   const handleLogout = () => {
     localStorage.removeItem("hiresphere_active_user");
     localStorage.removeItem("hiresphere_token");

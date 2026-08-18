@@ -2,13 +2,13 @@ import { useState } from "react";
 
 export default function CoordinatorDashboard() {
   // Safe mock data - will not break the backend!
-  const [drives, setDrives] = useState([
+  const [drives] = useState([
     { id: 1, company: "TechNova Solutions", role: "Frontend Developer", applicants: 142, status: "Active" },
     { id: 2, company: "DataSphere", role: "Data Analyst", applicants: 89, status: "Active" },
     { id: 3, company: "Global Finance", role: "Investment Banker", applicants: 210, status: "Closed" },
   ]);
 
-  const [students, setStudents] = useState([
+  const [students] = useState([
     { id: "STU-001", name: "Rahul Sharma", department: "Computer Science", cgpa: "8.9", status: "Unplaced" },
     { id: "STU-002", name: "Priya Patel", department: "Information Tech", cgpa: "9.2", status: "Placed" },
     { id: "STU-003", name: "Amit Kumar", department: "Electronics", cgpa: "7.8", status: "Unplaced" },

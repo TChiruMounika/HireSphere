@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom"; // Added so we can redirect to login
+import { useNavigate } from "react-router-dom";
 
 export default function Signup() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("STUDENT"); // Set default to match DB enum
+  const [role, setRole] = useState("STUDENT"); 
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   
   const navigate = useNavigate();
@@ -12,6 +13,13 @@ export default function Signup() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    // 1. Regex feature for email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setError("Please enter a valid email format.");
+      return;
+    }
+
     if (password.length < 8) {
       setError("Password must be at least 8 characters long.");
       return;
@@ -20,7 +28,7 @@ export default function Signup() {
     setError(""); 
 
     try {
-      // 1. Actually send the data to the Node.js backend
+      // 2. Original Database Connection (Untouched)
       const response = await fetch("http://localhost:5000/api/auth/register", {
         method: "POST",
         headers: {
@@ -29,18 +37,16 @@ export default function Signup() {
         body: JSON.stringify({ 
           email, 
           password, 
-          role // Matches 'STUDENT' or 'COORDINATOR'
+          role 
         }),
       });
 
       const data = await response.json();
 
-      // 2. If the backend throws an error (like email already exists), show it
       if (!response.ok) {
         throw new Error(data.error || "Failed to create account");
       }
 
-      // 3. Success! Alert the user and send them to the login page
       alert("Account created successfully!");
       navigate("/login");
 
@@ -61,18 +67,14 @@ export default function Signup() {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           
-          {/* Error Message Display */}
           {error && (
             <div className="bg-red-500/10 border border-red-500/50 text-red-400 p-3 rounded-lg text-sm text-center">
               {error}
             </div>
           )}
 
-          {/* Email Input */}
           <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">
-              Email Address
-            </label>
+            <label className="block text-sm font-medium text-slate-300 mb-2">Email Address</label>
             <input
               type="email"
               value={email}
@@ -83,13 +85,10 @@ export default function Signup() {
             />
           </div>
 
-          {/* Password Input */}
           <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">
-              Password
-            </label>
+            <label className="block text-sm font-medium text-slate-300 mb-2">Password</label>
             <input
-              type="password"
+              type={showPassword ? "text" : "password"}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-colors"
@@ -98,27 +97,30 @@ export default function Signup() {
             />
           </div>
 
-          {/* Role Selector */}
+          <div className="flex items-center mt-2">
+            <input 
+              type="checkbox" 
+              id="showPassSignup" 
+              checked={showPassword} 
+              onChange={() => setShowPassword(!showPassword)} 
+              className="w-4 h-4 rounded border-slate-700 bg-slate-950 text-purple-600 focus:ring-purple-600 focus:ring-offset-slate-900 cursor-pointer" 
+            />
+            <label htmlFor="showPassSignup" className="ml-2 text-sm text-slate-400 cursor-pointer">Show Password</label>
+          </div>
+
           <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">
-              I am a...
-            </label>
+            <label className="block text-sm font-medium text-slate-300 mb-2">I am a...</label>
             <select
               value={role}
               onChange={(e) => setRole(e.target.value)}
               className="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-colors"
             >
-              {/* Note: I changed the values to uppercase to match your Drizzle DB ENUM */}
               <option value="STUDENT">Student</option>
               <option value="COORDINATOR">Placement Coordinator</option>
             </select>
           </div>
 
-          {/* Submit Button */}
-          <button
-            type="submit"
-            className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-4 rounded-lg transition-colors mt-4 shadow-lg shadow-purple-500/20"
-          >
+          <button type="submit" className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-4 rounded-lg transition-colors mt-4 shadow-lg shadow-purple-500/20">
             Create Account
           </button>
         </form>
