@@ -1,105 +1,128 @@
+import { useState } from "react";
+
 export default function CoordinatorDashboard() {
+  // Safe mock data - will not break the backend!
+  const [drives, setDrives] = useState([
+    { id: 1, company: "TechNova Solutions", role: "Frontend Developer", applicants: 142, status: "Active" },
+    { id: 2, company: "DataSphere", role: "Data Analyst", applicants: 89, status: "Active" },
+    { id: 3, company: "Global Finance", role: "Investment Banker", applicants: 210, status: "Closed" },
+  ]);
+
+  const [students, setStudents] = useState([
+    { id: "STU-001", name: "Rahul Sharma", department: "Computer Science", cgpa: "8.9", status: "Unplaced" },
+    { id: "STU-002", name: "Priya Patel", department: "Information Tech", cgpa: "9.2", status: "Placed" },
+    { id: "STU-003", name: "Amit Kumar", department: "Electronics", cgpa: "7.8", status: "Unplaced" },
+  ]);
+
+  // Mock function for future database connection
+  const handleCreateDrive = () => {
+    alert("This will open a modal to POST a new drive to your real database!");
+  };
+
   return (
-    <div className="space-y-6">
+    <div className="max-w-7xl mx-auto space-y-8">
       
-      <div>
-        <h2 className="text-3xl font-bold text-white tracking-tight">Coordinator Portal</h2>
-        <p className="text-slate-400 mt-1">Manage batches, track readiness, and monitor recruitment drives.</p>
+      {/* Coordinator Header */}
+      <div className="bg-gradient-to-r from-blue-900/40 to-slate-900 p-8 rounded-2xl border border-blue-500/20 shadow-xl flex justify-between items-center">
+        <div>
+          <h2 className="text-3xl font-extrabold text-white mb-2">Coordinator Control Center</h2>
+          <p className="text-slate-300">Manage placement drives, monitor student progress, and export reports.</p>
+        </div>
+        <button 
+          onClick={handleCreateDrive}
+          className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-colors shadow-lg shadow-blue-500/20 flex items-center gap-2"
+        >
+          <span className="text-xl">+</span> New Drive
+        </button>
       </div>
 
-      {/* Top Row: Campus-Wide Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {/* Admin Quick Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <div className="bg-slate-900 p-6 rounded-xl border border-slate-800 shadow-md">
-          <h3 className="text-slate-400 text-sm font-medium">Placement Rate</h3>
-          <p className="text-4xl font-extrabold text-green-400 mt-2">78%</p>
-          <p className="text-xs text-slate-500 mt-2">+5% from last year</p>
+          <p className="text-slate-400 text-sm font-medium mb-1">Total Registered</p>
+          <p className="text-3xl font-bold text-white">842</p>
         </div>
-        
         <div className="bg-slate-900 p-6 rounded-xl border border-slate-800 shadow-md">
-          <h3 className="text-slate-400 text-sm font-medium">Average CTC</h3>
-          <p className="text-4xl font-extrabold text-blue-400 mt-2">8.5 LPA</p>
-          <p className="text-xs text-slate-500 mt-2">Highest: 24 LPA</p>
+          <p className="text-slate-400 text-sm font-medium mb-1">Students Placed</p>
+          <p className="text-3xl font-bold text-green-400">315</p>
         </div>
-        
         <div className="bg-slate-900 p-6 rounded-xl border border-slate-800 shadow-md">
-          <h3 className="text-slate-400 text-sm font-medium">Total Offers</h3>
-          <p className="text-4xl font-extrabold text-purple-400 mt-2">342</p>
-          <p className="text-xs text-slate-500 mt-2">Across 45 companies</p>
+          <p className="text-slate-400 text-sm font-medium mb-1">Active Drives</p>
+          <p className="text-3xl font-bold text-blue-400">12</p>
+        </div>
+        <div className="bg-slate-900 p-6 rounded-xl border border-slate-800 shadow-md">
+          <p className="text-slate-400 text-sm font-medium mb-1">Upcoming Interviews</p>
+          <p className="text-3xl font-bold text-purple-400">4</p>
         </div>
       </div>
 
-      {/* Middle Section: Tables and Lists */}
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         
-        {/* 1. Student Readiness Filter (Takes up 2 columns) */}
-        <div className="xl:col-span-2 bg-slate-900 p-6 rounded-xl border border-slate-800 shadow-md">
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="text-lg font-semibold text-blue-300">Student Readiness Filter</h3>
-            <input 
-              type="text" 
-              placeholder="Search by skill or name..." 
-              className="bg-slate-950 border border-slate-700 rounded-lg px-4 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors"
-            />
+        {/* Active Drives Manager */}
+        <div className="bg-slate-900 rounded-2xl border border-slate-800 shadow-xl overflow-hidden flex flex-col">
+          <div className="p-6 border-b border-slate-800 flex justify-between items-center bg-slate-950/50">
+            <h3 className="text-lg font-bold text-slate-200">Drive Management</h3>
+            <span className="text-xs font-semibold bg-blue-500/10 text-blue-400 px-3 py-1 rounded-full border border-blue-500/20">Live</span>
           </div>
-          
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="border-b border-slate-800 text-slate-400 text-sm">
-                  <th className="pb-3 font-medium">Student Name</th>
-                  <th className="pb-3 font-medium">Tech Stack</th>
-                  <th className="pb-3 font-medium">ATS Score</th>
-                  <th className="pb-3 font-medium">DSA Solved</th>
-                  <th className="pb-3 font-medium">Status</th>
+          <div className="p-6 flex-1 overflow-auto">
+            <div className="space-y-4">
+              {drives.map((drive) => (
+                <div key={drive.id} className="bg-slate-950 p-4 rounded-xl border border-slate-800 flex justify-between items-center hover:border-slate-700 transition-colors">
+                  <div>
+                    <h4 className="font-bold text-slate-200">{drive.company}</h4>
+                    <p className="text-xs text-slate-500">{drive.role}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm font-medium text-slate-300">{drive.applicants} Applicants</p>
+                    <p className={`text-xs font-bold mt-1 ${drive.status === 'Active' ? 'text-green-400' : 'text-red-400'}`}>
+                      {drive.status}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Student Database Preview */}
+        <div className="bg-slate-900 rounded-2xl border border-slate-800 shadow-xl overflow-hidden flex flex-col">
+          <div className="p-6 border-b border-slate-800 flex justify-between items-center bg-slate-950/50">
+            <h3 className="text-lg font-bold text-slate-200">Student Database Overview</h3>
+            <button className="text-sm text-blue-400 hover:text-blue-300 transition-colors font-medium">View All</button>
+          </div>
+          <div className="overflow-x-auto flex-1">
+            <table className="w-full text-left text-sm text-slate-300">
+              <thead className="text-xs text-slate-500 uppercase bg-slate-950/50 border-b border-slate-800">
+                <tr>
+                  <th className="px-6 py-4 font-semibold">Student</th>
+                  <th className="px-6 py-4 font-semibold">Dept & CGPA</th>
+                  <th className="px-6 py-4 font-semibold text-right">Status</th>
                 </tr>
               </thead>
-              <tbody className="text-sm">
-                <tr className="border-b border-slate-800/50 hover:bg-slate-800/20 transition-colors">
-                  <td className="py-4 text-white font-medium">Rahul Sharma</td>
-                  <td className="py-4 text-slate-300">MERN, Next.js</td>
-                  <td className="py-4 text-green-400 font-bold">92%</td>
-                  <td className="py-4 text-white">350+</td>
-                  <td className="py-4"><span className="bg-green-500/10 text-green-400 border border-green-500/20 px-2 py-1 rounded text-xs font-semibold">Ready</span></td>
-                </tr>
-                <tr className="border-b border-slate-800/50 hover:bg-slate-800/20 transition-colors">
-                  <td className="py-4 text-white font-medium">Priya Patel</td>
-                  <td className="py-4 text-slate-300">Java, Spring Boot</td>
-                  <td className="py-4 text-yellow-400 font-bold">75%</td>
-                  <td className="py-4 text-white">120+</td>
-                  <td className="py-4"><span className="bg-yellow-500/10 text-yellow-400 border border-yellow-500/20 px-2 py-1 rounded text-xs font-semibold">Needs Prep</span></td>
-                </tr>
+              <tbody>
+                {students.map((student) => (
+                  <tr key={student.id} className="border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors">
+                    <td className="px-6 py-4">
+                      <p className="font-bold text-slate-200">{student.name}</p>
+                      <p className="text-xs text-slate-500">{student.id}</p>
+                    </td>
+                    <td className="px-6 py-4">
+                      <p className="font-medium text-slate-300">{student.department}</p>
+                      <p className="text-xs text-slate-500">CGPA: {student.cgpa}</p>
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      <span className={`px-3 py-1 rounded-full text-xs font-bold ${
+                        student.status === 'Placed' 
+                          ? 'bg-green-500/10 text-green-400 border border-green-500/20' 
+                          : 'bg-slate-800 text-slate-400 border border-slate-700'
+                      }`}>
+                        {student.status}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
-          </div>
-        </div>
-
-        {/* 2. Recruitment Drive Manager */}
-        <div className="bg-slate-900 p-6 rounded-xl border border-slate-800 shadow-md">
-           <div className="flex justify-between items-center mb-6">
-            <h3 className="text-lg font-semibold text-purple-300">Active Drives</h3>
-            <button className="text-purple-400 text-sm hover:text-purple-300 font-medium">+ Add Drive</button>
-          </div>
-          
-          <div className="space-y-4">
-            <div className="bg-slate-950 p-4 rounded-lg border border-slate-800 hover:border-slate-600 transition-colors cursor-pointer">
-              <div className="flex justify-between items-start">
-                <div>
-                  <h4 className="text-white font-medium">TCS Digital</h4>
-                  <p className="text-slate-400 text-xs mt-1">Online Assessment</p>
-                </div>
-                <span className="bg-blue-500/10 text-blue-400 border border-blue-500/20 text-xs px-2 py-1 rounded font-medium">Tomorrow</span>
-              </div>
-            </div>
-            
-            <div className="bg-slate-950 p-4 rounded-lg border border-slate-800 hover:border-slate-600 transition-colors cursor-pointer">
-              <div className="flex justify-between items-start">
-                <div>
-                  <h4 className="text-white font-medium">Infosys</h4>
-                  <p className="text-slate-400 text-xs mt-1">Technical Interview</p>
-                </div>
-                <span className="bg-slate-800 text-slate-300 border border-slate-700 text-xs px-2 py-1 rounded font-medium">Aug 20</span>
-              </div>
-            </div>
           </div>
         </div>
 

@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   
   const navigate = useNavigate();
@@ -11,9 +12,16 @@ export default function Login() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(""); 
+
+    // 1. Regex feature for email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setError("Please enter a valid email format.");
+      return;
+    }
     
     try {
-      // 1. Send the login request to the actual Node.js backend
+      // 2. Original Database Connection (Untouched)
       const response = await fetch("http://localhost:5000/api/auth/login", {
         method: "POST",
         headers: {
@@ -24,22 +32,21 @@ export default function Login() {
 
       const data = await response.json();
 
-      // 2. If the backend says the password or email is wrong, show the error
       if (!response.ok) {
         throw new Error(data.error || "Login failed");
       }
 
-      // 3. Success! The backend gave us a JWT token and the user's role.
-      // In a real app, you would save this token in localStorage here:
-      // localStorage.setItem("token", data.token);
+      // 3. Save Active User to trigger Profile Update on Dashboard
+      localStorage.setItem("hiresphere_token", data.token); // Save token for backend security
+      localStorage.setItem("hiresphere_active_user", JSON.stringify({ email: email, role: data.user.role }));
 
-      // 4. Redirect based on their ACTUAL role from the database!
+      // 4. Redirect based on ACTUAL role from the database
       if (data.user.role === "COORDINATOR") {
         navigate("/dashboard/coordinator"); 
       } else if (data.user.role === "DEAN") {
         navigate("/dashboard/dean"); 
       } else {
-        navigate("/dashboard"); // Default Student Dashboard
+        navigate("/dashboard"); 
       }
 
     } catch (err: any) {
@@ -59,18 +66,14 @@ export default function Login() {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           
-          {/* Error Display */}
           {error && (
             <div className="bg-red-500/10 border border-red-500/50 text-red-400 p-3 rounded-lg text-sm text-center">
               {error}
             </div>
           )}
 
-          {/* Email Input */}
           <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">
-              Email Address
-            </label>
+            <label className="block text-sm font-medium text-slate-300 mb-2">Email Address</label>
             <input
               type="email"
               value={email}
@@ -81,13 +84,10 @@ export default function Login() {
             />
           </div>
 
-          {/* Password Input */}
           <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">
-              Password
-            </label>
+            <label className="block text-sm font-medium text-slate-300 mb-2">Password</label>
             <input
-              type="password"
+              type={showPassword ? "text" : "password"}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-colors"
@@ -96,11 +96,18 @@ export default function Login() {
             />
           </div>
 
-          {/* Submit Button */}
-          <button
-            type="submit"
-            className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-4 rounded-lg transition-colors mt-4 shadow-lg shadow-purple-500/20"
-          >
+          <div className="flex items-center mt-2">
+            <input 
+              type="checkbox" 
+              id="showPassLogin" 
+              checked={showPassword} 
+              onChange={() => setShowPassword(!showPassword)} 
+              className="w-4 h-4 rounded border-slate-700 bg-slate-950 text-purple-600 focus:ring-purple-600 focus:ring-offset-slate-900 cursor-pointer" 
+            />
+            <label htmlFor="showPassLogin" className="ml-2 text-sm text-slate-400 cursor-pointer">Show Password</label>
+          </div>
+
+          <button type="submit" className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-4 rounded-lg transition-colors mt-4 shadow-lg shadow-purple-500/20">
             Sign In
           </button>
         </form>
