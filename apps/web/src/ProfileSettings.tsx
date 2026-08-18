@@ -14,6 +14,44 @@ export default function ProfileSettings() {
   const [phone, setPhone] = useState("");
   const [bio, setBio] = useState("");
 
+  // Personal Form States
+  const [fullName, setFullName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [bio, setBio] = useState("");
+
+  // Professional Link States
+  const [linkedin, setLinkedin] = useState("");
+  const [github, setGithub] = useState("");
+  const [leetcode, setLeetcode] = useState("");
+  const [portfolio, setPortfolio] = useState("");
+
+  // NEW: Theme State
+  const [theme, setTheme] = useState("dark");
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("hiresphere_active_user");
+    if (storedUser) {
+      const parsedUser = JSON.parse(storedUser);
+      setActiveUser(parsedUser);
+      setFullName(parsedUser.email.split("@")[0]);
+    }
+    
+    // Load saved theme on mount
+    const savedTheme = localStorage.getItem("hiresphere_theme") || "dark";
+    setTheme(savedTheme);
+  }, []);
+
+  // NEW: Instantly shift colors when the dropdown changes
+  const handleThemeChange = (newTheme: string) => {
+    setTheme(newTheme);
+    localStorage.setItem("hiresphere_theme", newTheme);
+    if (newTheme === "dark") {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  };
+
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
     setIsSaving(true);
@@ -32,10 +70,11 @@ export default function ProfileSettings() {
   if (!activeUser) return null;
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
+    <div className="max-w-4xl mx-auto space-y-6 pb-12 transition-colors duration-300">
       
-      <div className="bg-gradient-to-r from-slate-800 to-slate-900 p-8 rounded-2xl border border-slate-700 shadow-xl flex items-center gap-6">
-        <div className="w-24 h-24 rounded-full bg-gradient-to-tr from-purple-600 to-blue-500 flex items-center justify-center text-3xl font-bold text-white shadow-lg border-4 border-slate-900">
+      {/* Profile Header */}
+      <div className="bg-gradient-to-r from-slate-200 to-slate-300 dark:from-slate-800 dark:to-slate-900 p-8 rounded-2xl border border-slate-300 dark:border-slate-700 shadow-xl flex items-center gap-6 transition-colors duration-300">
+        <div className="w-24 h-24 rounded-full bg-gradient-to-tr from-purple-600 to-blue-500 flex items-center justify-center text-3xl font-bold text-white shadow-lg border-4 border-white dark:border-slate-900">
           {fullName.substring(0, 2).toUpperCase()}
         </div>
 
@@ -68,7 +107,7 @@ export default function ProfileSettings() {
         <form onSubmit={handleSave} className="p-8 space-y-6">
           
           {message && (
-            <div className="bg-green-500/10 border border-green-500/50 text-green-400 p-4 rounded-lg text-sm text-center font-medium animate-in fade-in slide-in-from-top-2">
+            <div className="mb-6 bg-green-500/10 border border-green-500/50 text-green-600 dark:text-green-400 p-4 rounded-lg text-sm text-center font-medium animate-in fade-in slide-in-from-top-2">
               {message}
             </div>
           )}
@@ -129,7 +168,7 @@ export default function ProfileSettings() {
                   : "bg-purple-600 hover:bg-purple-700 text-white shadow-purple-500/20"
               }`}
             >
-              {isSaving ? "Saving Changes..." : "Save Profile"}
+              {isSaving ? "Saving Profiles..." : "Save All Changes"}
             </button>
           </div>
 
