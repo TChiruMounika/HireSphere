@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom"; 
+import { useAuthStore } from "./store/authStore"; // 1. IMPORT ADDED
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -8,6 +9,7 @@ export default function Login() {
   const [error, setError] = useState("");
   
   const navigate = useNavigate();
+  const setAuth = useAuthStore((state: any) => state.setAuth); // 2. INITIALIZATION ADDED
 
   // SECURITY FIX: If already logged in, immediately redirect to dashboard
   useEffect(() => {
@@ -42,6 +44,12 @@ export default function Login() {
 
       localStorage.setItem("hiresphere_token", data.token); 
       localStorage.setItem("hiresphere_active_user", JSON.stringify({ email: email, role: data.user.role }));
+
+      // 3. ZUSTAND SYNC ADDED: Fire this before routing so the app knows who is logged in!
+      setAuth(
+        { id: data.user.id, email: data.user.email, role: data.user.role }, 
+        data.token
+      );
 
       // Role-based routing
       if (data.user.role === "COORDINATOR") {
