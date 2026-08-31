@@ -1,27 +1,30 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuthStore } from "./store/authStore";
 
 export default function DashboardLayout() {
   const location = useLocation();
   const navigate = useNavigate();
-  const authUser = useAuthStore((state) => state.user);
+  
+  // Zustand State Management
+  const authUser = useAuthStore((state: any) => state.user);
+  const logout = useAuthStore((state: any) => state.logout);
   
   const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const activeUser = authUser;
-  // 1. Ensure only signed-in accounts from the DB get access
-
   const [activeUser, setActiveUser] = useState<{email: string, role: string} | null>(null);
 
   // 1. Ensure only signed-in accounts get access (AGGRESSIVE CHECK)
   useEffect(() => {
     const storedUser = localStorage.getItem("hiresphere_active_user");
-    if (!storedUser) {
+    
+    // Check both local storage and the new Zustand auth store
+    if (!storedUser && !authUser) {
       navigate("/login", { replace: true }); 
     } else {
-      setActiveUser(JSON.parse(storedUser));
+      // Prefer the local storage parsed user, fallback to Zustand user
+      setActiveUser(storedUser ? JSON.parse(storedUser) : authUser);
     }
-  }, [navigate, location.pathname]); // <-- This forces an auth check on EVERY back/forward arrow click
+  }, [navigate, location.pathname, authUser]); 
 
   if (!activeUser) return null; 
 
@@ -39,16 +42,16 @@ export default function DashboardLayout() {
     return email.substring(0, 2).toUpperCase();
   };
 
-  // 4. Handle Logout (Moved to profile dropdown)
-const logout = useAuthStore((state) => state.logout);
-
-const handleLogout = () => {
-  logout();
-  navigate("/login");
-};
+  // 4. Handle Logout (Safely combined Zustand & LocalStorage)
   const handleLogout = () => {
+    // 1. Clear Zustand global state
+    if (logout) logout();
+    
+    // 2. Clear browser local storage
     localStorage.removeItem("hiresphere_active_user");
     localStorage.removeItem("hiresphere_token");
+    
+    // 3. Securely redirect
     navigate("/login", { replace: true });
   };
 
