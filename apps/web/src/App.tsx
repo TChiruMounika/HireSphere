@@ -10,6 +10,7 @@ import StudentDashboard from "./StudentDashboard";
 import Home from "./Home"; 
 import ProfileSettings from "./ProfileSettings";
 import PortalSelection from "./PortalSelection";
+import ProtectedRoute from "./ProtectedRoute"; // 1. Imported ProtectedRoute
 
 export default function App() {
   
@@ -29,17 +30,21 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
+        {/* Public Routes */}
         <Route path="/" element={<Home />} />
         <Route path="/portals" element={<PortalSelection />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         
-        <Route path="/dashboard" element={<DashboardLayout />}>
-           <Route index element={<StudentDashboard />} />
-           <Route path="scanner" element={<ResumeScanner />} />
-           <Route path="coordinator" element={<CoordinatorDashboard />} />
-           <Route path="admin" element={<DeanDashboard />} />
-           <Route path="profile" element={<ProfileSettings />} /> 
+        {/* Protected Routes */}
+        <Route element={<ProtectedRoute />}>
+          <Route path="/dashboard" element={<DashboardLayout />}>
+             <Route index element={<StudentDashboard />} />
+             <Route path="scanner" element={<ResumeScanner />} />
+             <Route path="coordinator" element={<CoordinatorDashboard />} />
+             <Route path="admin" element={<DeanDashboard />} />
+             <Route path="profile" element={<ProfileSettings />} /> 
+          </Route>
         </Route>
       </Routes>
     </BrowserRouter>

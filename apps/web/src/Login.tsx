@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom"; 
-import { useAuthStore } from "./store/authStore"; // 1. IMPORT ADDED
+import { useAuthStore } from "./store/authStore";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -9,15 +9,15 @@ export default function Login() {
   const [error, setError] = useState("");
   
   const navigate = useNavigate();
-  const setAuth = useAuthStore((state: any) => state.setAuth); // 2. INITIALIZATION ADDED
+  const setAuth = useAuthStore((state) => state.setAuth);
+  const token = useAuthStore((state) => state.token); // Read token from Zustand
 
-  // SECURITY FIX: If already logged in, immediately redirect to dashboard
+  // Redirect if already authenticated
   useEffect(() => {
-    const storedUser = localStorage.getItem("hiresphere_active_user");
-    if (storedUser) {
+    if (token) {
       navigate("/dashboard", { replace: true });
     }
-  }, [navigate]);
+  }, [token, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,10 +42,7 @@ export default function Login() {
         throw new Error(data.error || "Login failed");
       }
 
-      localStorage.setItem("hiresphere_token", data.token); 
-      localStorage.setItem("hiresphere_active_user", JSON.stringify({ email: email, role: data.user.role }));
-
-      // 3. ZUSTAND SYNC ADDED: Fire this before routing so the app knows who is logged in!
+      // Save into Zustand (Persists automatically to localStorage)
       setAuth(
         { id: data.user.id, email: data.user.email, role: data.user.role }, 
         data.token
